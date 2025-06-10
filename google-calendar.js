@@ -24,7 +24,7 @@ async function initializeGoogleCalendar() {
         });
 
         // Verificar se há Client ID configurado
-        const CLIENT_ID = 'YOUR_CLIENT_ID'; // Configure seu Client ID aqui
+        const CLIENT_ID = '801226449583-2vpjrtpbhh9ek30fd01g3jlds2p42br9.apps.googleusercontent.com';
         
         if (CLIENT_ID !== 'YOUR_CLIENT_ID') {
             // Inicializar Google Identity Services apenas se Client ID estiver configurado

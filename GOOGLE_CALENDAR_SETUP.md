@@ -37,7 +37,7 @@ Para usar a integração completa com o Google Calendar, você precisa configura
 
 **API Key**: `AIzaSyBcpcu73o1yR60Z5MLrly31-nzEi09-mf0` ✅ (Já configurada)
 
-**Client ID**: ❌ Precisa ser configurado
+**Client ID**: ❌ Precisa ser configuradoimage.png
 
 ## 📋 Funcionalidades Disponíveis
 
