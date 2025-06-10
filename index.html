@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mídia da Igreja - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Google Calendar API -->
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client"></script>
+</head>
+<body>
+    <!-- Tela de Login -->
+    <div id="login-container" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <i class="fas fa-church"></i>
+                <h1>Mídia da Igreja</h1>
+                <p>Acesso restrito à equipe</p>
+            </div>
+            <form id="login-form" class="login-form">
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Usuário" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="Senha" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Entrar
+                </button>
+            </form>
+            <div id="error-message" class="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- Aplicação Principal (inicialmente oculta) -->
+    <div id="app-container" class="app-container" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-church"></i>
+                    <span>Mídia da Igreja</span>
+                </div>
+                <nav class="nav">
+                    <a href="#" class="nav-link active" data-section="inicio">
+                        <i class="fas fa-home"></i>
+                        Início
+                    </a>
+                    <a href="#" class="nav-link" data-section="escala">
+                        <i class="fas fa-calendar-alt"></i>
+                        Escala
+                    </a>
+                    <a href="#" class="nav-link" data-section="membros">
+                        <i class="fas fa-users"></i>
+                        Membros
+                    </a>
+                </nav>
+                <div class="user-menu">
+                    <span id="user-name">Usuário</span>
+                    <button id="logout-btn" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Sair
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <!-- Seção Início -->
+            <section id="inicio-section" class="section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-home"></i> Início</h2>
+                    <p>Bem-vindo ao sistema de gestão da mídia da igreja</p>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Próxima Escala</h3>
+                            <p>Domingo - 10:00h</p>
+                            <small>Culto Manhã</small>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Membros Ativos</h3>
+                            <p id="total-membros">8</p>
+                            <small>Equipe de Mídia</small>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                        <div class="card-content">
+                            <h3>Status Equipamentos</h3>
+                            <p style="color: #28a745;">Operacional</p>
+                            <small>Todos os sistemas OK</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="announcements">
+                    <h3><i class="fas fa-bullhorn"></i> Avisos Importantes</h3>
+                    <div class="announcement-item">
+                        <div class="announcement-date">Hoje</div>
+                        <div class="announcement-text">Lembrete: Chegar 30 minutos antes do culto para verificação dos equipamentos</div>
+                    </div>
+                    <div class="announcement-item">
+                        <div class="announcement-date">Esta semana</div>
+                        <div class="announcement-text">Reunião da equipe de mídia - Quarta-feira às 19:30h</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Escala -->
+            <section id="escala-section" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-calendar-alt"></i> Escala de Serviços</h2>
+                    <div class="header-buttons">
+                        <button class="btn-secondary" id="sync-calendar-btn">
+                            <i class="fas fa-sync-alt"></i>
+                            Sincronizar Google
+                        </button>
+                        <button class="btn-primary" id="add-escala-btn">
+                            <i class="fas fa-plus"></i>
+                            Nova Escala
+                        </button>
+                    </div>
+                </div>
+                <div class="calendar-status">
+                    <div id="calendar-connection-status" class="status-disconnected">
+                        <i class="fas fa-wifi"></i>
+                        <span>Google Calendar: Desconectado</span>
+                    </div>
+                </div>
+                <div class="escala-calendar">
+                    <div class="calendar-header">
+                        <button id="prev-month" class="btn-nav">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h3 id="current-month">Janeiro 2024</h3>
+                        <button id="next-month" class="btn-nav">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    <div class="escala-list">
+                        <div id="calendar-loading" class="loading-message" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>Carregando eventos do Google Calendar...</span>
+                        </div>
+                        <div id="calendar-events-container">
+                            <!-- Eventos do Google Calendar serão carregados aqui -->
+                        </div>
+                        <!-- Eventos locais de exemplo (serão substituídos pelos do Google Calendar) -->
+                        <div class="escala-item local-event">
+                            <div class="escala-date">
+                                <div class="day">DOM</div>
+                                <div class="date">15</div>
+                                <div class="month">JAN</div>
+                            </div>
+                            <div class="escala-details">
+                                <h4>Culto Manhã - 10:00h <span class="event-source">(Local)</span></h4>
+                                <div class="escala-roles">
+                                    <span class="role"><i class="fas fa-microphone"></i> Som: João Silva</span>
+                                    <span class="role"><i class="fas fa-video"></i> Vídeo: Maria Santos</span>
+                                    <span class="role"><i class="fas fa-desktop"></i> Slides: Pedro Costa</span>
+                                </div>
+                            </div>
+                            <div class="escala-actions">
+                                <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção Membros -->
+            <section id="membros-section" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-users"></i> Membros da Equipe</h2>
+                    <button class="btn-primary" id="add-membro-btn">
+                        <i class="fas fa-user-plus"></i>
+                        Novo Membro
+                    </button>
+                </div>
+                <div class="membros-grid">
+                    <div class="membro-card">
+                        <div class="membro-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="membro-info">
+                            <h3>João Silva</h3>
+                            <p class="membro-role">Líder de Som</p>
+                            <div class="membro-contact">
+                                <span><i class="fas fa-phone"></i> (11) 99999-9999</span>
+                                <span><i class="fas fa-envelope"></i> joao@email.com</span>
+                            </div>
+                            <div class="membro-skills">
+                                <span class="skill">Som</span>
+                                <span class="skill">Mixagem</span>
+                            </div>
+                        </div>
+                        <div class="membro-actions">
+                            <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="membro-card">
+                        <div class="membro-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="membro-info">
+                            <h3>Maria Santos</h3>
+                            <p class="membro-role">Operadora de Vídeo</p>
+                            <div class="membro-contact">
+                                <span><i class="fas fa-phone"></i> (11) 88888-8888</span>
+                                <span><i class="fas fa-envelope"></i> maria@email.com</span>
+                            </div>
+                            <div class="membro-skills">
+                                <span class="skill">Vídeo</span>
+                                <span class="skill">Streaming</span>
+                            </div>
+                        </div>
+                        <div class="membro-actions">
+                            <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <div class="membro-card">
+                        <div class="membro-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="membro-info">
+                            <h3>Pedro Costa</h3>
+                            <p class="membro-role">Operador de Slides</p>
+                            <div class="membro-contact">
+                                <span><i class="fas fa-phone"></i> (11) 77777-7777</span>
+                                <span><i class="fas fa-envelope"></i> pedro@email.com</span>
+                            </div>
+                            <div class="membro-skills">
+                                <span class="skill">Slides</span>
+                                <span class="skill">ProPresenter</span>
+                            </div>
+                        </div>
+                        <div class="membro-actions">
+                            <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                            <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para Nova Escala/Evento -->
+    <div id="event-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-calendar-plus"></i> Nova Escala</h3>
+                <button class="modal-close" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="event-form">
+                    <div class="form-group">
+                        <label for="event-title">Título do Evento</label>
+                        <input type="text" id="event-title" placeholder="Ex: Culto Manhã" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="event-date">Data</label>
+                            <input type="date" id="event-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="event-time">Horário</label>
+                            <input type="time" id="event-time" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-duration">Duração (minutos)</label>
+                        <input type="number" id="event-duration" value="120" min="30" max="480">
+                    </div>
+                    <div class="form-group">
+                        <label for="event-description">Descrição/Escalas</label>
+                        <textarea id="event-description" rows="4" placeholder="Som: João Silva&#10;Vídeo: Maria Santos&#10;Slides: Pedro Costa"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="event-location">Local</label>
+                        <input type="text" id="event-location" placeholder="Igreja - Auditório Principal">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn-secondary" id="cancel-event">Cancelar</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i>
+                            Salvar no Google Calendar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="google-calendar.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
